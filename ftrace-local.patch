@@ -1,0 +1,32 @@
+diff -up linux-3.10.0-693.2.2.el7-org/kernel/trace/ftrace.c linux-3.10.0-693.2.2.el7/kernel/trace/ftrace.c
+--- linux-3.10.0-693.2.2.el7-org/kernel/trace/ftrace.c  2017-09-27 15:08:05.390060337 +0200
++++ linux-3.10.0-693.2.2.el7/kernel/trace/ftrace.c      2017-10-01 08:42:57.005143406 +0200
+@@ -234,10 +234,12 @@ static int control_ops_alloc(struct ftra
+        return 0;
+ }
+ 
++#ifdef FTRACE_OPS_FL_CONTROL
+ static void control_ops_free(struct ftrace_ops *ops)
+ {
+        free_percpu(ops->disabled);
+ }
++#endif /* FTRACE_OPS_FL_CONTROL */
+ 
+ static void update_global_ops(void)
+ {
+diff -up linux-3.10.0-693.2.2.el7-org/arch/x86/mm/fault.c linux-3.10.0-693.2.2.el7/arch/x86/mm/fault.c
+--- linux-3.10.0-693.2.2.el7-org/arch/x86/mm/fault.c    2017-09-27 15:07:57.860979155 +0200
++++ linux-3.10.0-693.2.2.el7/arch/x86/mm/fault.c        2017-09-30 16:20:39.353117358 +0200
+@@ -1238,6 +1238,7 @@ do_page_fault(struct pt_regs *regs, unsi
+        exception_exit(prev_state);
+ }
+ 
++#ifdef CONFIG_TRACING
+ static void trace_page_fault_entries(struct pt_regs *regs,
+                                     unsigned long error_code)
+ {
+@@ -1264,3 +1265,4 @@ trace_do_page_fault(struct pt_regs *regs
+        __do_page_fault(regs, error_code, address);
+        exception_exit(prev_state);
+ }
++#endif /* CONFIG_TRACING */
