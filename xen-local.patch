@@ -1,0 +1,22 @@
+diff -up linux-3.10.0-693.2.2.el7-org/arch/x86/kernel/smpboot.c linux-3.10.0-693.2.2.el7/arch/x86/kernel/smpboot.c 
+--- linux-3.10.0-693.2.2.el7-org/arch/x86/kernel/smpboot.c  2017-09-09 09:06:42.000000000 +0200
++++ linux-3.10.0-693.2.2.el7/arch/x86/kernel/smpboot.c  2017-09-27 11:43:57.242519097 +0200
+@@ -338,17 +338,6 @@ static void __init smp_init_package_map(
+         */
+        max_physical_pkg_id = DIV_ROUND_UP(MAX_LOCAL_APIC, ncpus);
+ 
+-       if (x86_hyper == &x86_hyper_xen_hvm) {
+-               /*
+-                * RHEL-only. Each logical package has not more than
+-                * x86_max_cores CPUs but it can happen that it has less, e.g.
+-                * we may have 1 CPU per logical package regardless of what's
+-                * in x86_max_cores. This is seen on some Xen setups with AMD
+-                * processors.
+-                */
+-               __max_logical_packages = min(max_physical_pkg_id, total_cpus);
+-       }
+-
+        size = max_physical_pkg_id * sizeof(unsigned int);
+        physical_to_logical_pkg = kmalloc(size, GFP_KERNEL);
+        memset(physical_to_logical_pkg, 0xff, size);
+
