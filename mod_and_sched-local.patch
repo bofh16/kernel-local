@@ -1,0 +1,54 @@
+diff -up linux-3.10.0-693.2.2.el7-org/kernel/rh_taint.c linux-3.10.0-693.2.2.el7/kernel/rh_taint.c
+--- linux-3.10.0-693.2.2.el7/kernel-org/rh_taint.c  2017-09-27 15:08:05.369060156 +0200
++++ linux-3.10.0-693.2.2.el7/kernel/rh_taint.c  2017-09-29 09:49:16.721654087 +0200
+@@ -29,14 +29,10 @@ void mark_tech_preview(const char *msg,
+ 
+        if (msg)
+                str = msg;
+-       else if (mod && mod->name)
+-               str = mod->name;
+ 
+        pr_warn("TECH PREVIEW: %s may not be fully supported.\n"
+                "Please review provided documentation for limitations.\n",
+                (str ? str : "kernel"));
+        add_taint(TAINT_TECH_PREVIEW, LOCKDEP_STILL_OK);
+-       if (mod)
+-               mod->taints |= (1U << TAINT_TECH_PREVIEW);
+ }
+ EXPORT_SYMBOL(mark_tech_preview);
+
+
+diff -up linux-3.10.0-693.2.2.el7-org/arch/x86/include/asm/spinlock_types.h linux-3.10.0-693.2.2.el7/arch/x86/include/asm/spinlock_types.h
+--- linux-3.10.0-693.2.2.el7-org/arch/x86/include/asm/spinlock_types.h    2017-09-27 15:07:57.786978225 +0200
++++ linux-3.10.0-693.2.2.el7/arch/x86/include/asm/spinlock_types.h    2017-09-29 13:44:44.238493220 +0200
+@@ -12,8 +12,8 @@
+ #endif
+ 
+ #if (CONFIG_NR_CPUS < (256 / __TICKET_LOCK_INC))
+-typedef u8  __ticket_t;
+-typedef u16 __ticketpair_t;
++typedef u16  __ticket_t;
++typedef u32 __ticketpair_t;
+ #else
+ typedef u16 __ticket_t;
+ typedef u32 __ticketpair_t;
+
+diff -up linux-3.10.0-693.2.2.el7-org/include/linux/sched.h linux-3.10.0-693.2.2.el7/include/linux/sched.h
+--- linux-3.10.0-693.2.2.el7-org/include/linux/sched.h      2017-09-27 15:08:04.648053927 +0200
++++ linux-3.10.0-693.2.2.el7/include/linux/sched.h      2017-09-30 09:15:31.997912930 +0200
+@@ -1153,7 +1153,6 @@ struct sched_avg {
+        unsigned long load_avg_contrib;
+ };
+ 
+-#ifdef CONFIG_SCHEDSTATS
+ struct sched_statistics {
+        u64                     wait_start;
+        u64                     wait_max;
+@@ -1187,7 +1186,6 @@ struct sched_statistics {
+        u64                     nr_wakeups_passive;
+        u64                     nr_wakeups_idle;
+ };
+-#endif
+ 
+ struct sched_entity {
+        struct load_weight      load;           /* for load-balancing */
