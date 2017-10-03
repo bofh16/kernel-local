@@ -1,0 +1,34 @@
+diff -up linux-3.10.0-693.2.2.el7-org/fs/bio.c linux-3.10.0-693.2.2.el7/fs/bio.c
+--- linux-3.10.0-693.2.2.el7-org/fs/bio.c       2017-09-09 09:06:42.000000000 +0200
++++ linux-3.10.0-693.2.2.el7/fs/bio.c   2017-10-03 10:11:34.946533672 +0200
+@@ -1872,12 +1872,14 @@ static void bio_pair_end_1(struct bio *b
+        if (err)
+                bp->error = err;
+ 
++       #ifdef CONFIG_BLK_DEV_INTEGRITY
+        /*
+         * If the integrity payload was created for this bio (and not
+         * split from the parent), then go ahead and free it.
+         */
+        if (bio_integrity(bi) && bi->bi_integrity != &bp->bip2)
+                bio_integrity_free(bi);
++    #endif /* CONFIG_BLK_DEV_INTEGRITY */
+ 
+        bio_pair_release(bp);
+ }
+@@ -1889,6 +1891,7 @@ static void bio_pair_end_2(struct bio *b
+        if (err)
+                bp->error = err;
+ 
++    #ifdef CONFIG_BLK_DEV_INTEGRITY
+        /*
+         * If the integrity payload was created for this bio (and not
+         * split from the parent), then go ahead and free it.
+@@ -1896,6 +1899,8 @@ static void bio_pair_end_2(struct bio *b
+        if (bio_integrity(bi) && bi->bi_integrity != &bp->bip1)
+                bio_integrity_free(bi);
+ 
++    #endif /* CONFIG_BLK_DEV_INTEGRITY */
++    
+        bio_pair_release(bp);
+ }
