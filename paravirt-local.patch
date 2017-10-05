@@ -1,0 +1,37 @@
+diff -up linux-3.10.0-693.2.2.el7-org/arch/x86/include/asm/mmu_context.h  linux-3.10.0-693.2.2.el7/arch/x86/include/asm/mmu_context.h
+--- linux-3.10.0-693.2.2.el7-org/arch/x86/include/asm/mmu_context.h     2017-09-09 09:06:42.000000000 +0200
++++ linux-3.10.0-693.2.2.el7/arch/x86/include/asm/mmu_context.h 2017-10-03 19:21:11.277904493 +0200
+@@ -141,6 +141,7 @@ static inline bool is_64bit_mm(struct mm
+ }
+ #endif
+ 
++#ifdef CONFIG_PARAVIRT
+ static inline void arch_bprm_mm_init(struct mm_struct *mm,
+                struct vm_area_struct *vma)
+ {
+@@ -152,5 +153,6 @@ static inline void arch_unmap(struct mm_
+ {
+        mpx_notify_unmap(mm, vma, start, end);
+ }
++#endif /* CONFIG_PARAVIRT */
+ 
+ #endif /* _ASM_X86_MMU_CONTEXT_H */
+diff -up linux-3.10.0-693.2.2.el7-org/kernel/qspinlock.c linux-3.10.0-693.2.2.el7/kernel/qspinlock.c
+--- linux-3.10.0-693.2.2.el7-org/kernel/qspinlock.c     2017-09-09 09:06:42.000000000 +0200
++++ linux-3.10.0-693.2.2.el7/kernel/qspinlock.c 2017-10-05 10:20:11.255037743 +0200
+@@ -317,6 +317,7 @@ done:
+ EXPORT_SYMBOL(queued_spin_unlock_wait);
+ #endif
+ 
++#ifdef CONFIG_PARAVIRT
+ /*
+  * Enable paravirt_ticketlocks_enabled call sites patching.
+  */
+@@ -326,6 +327,7 @@ static int __init queued_enable_pv_ticke
+        return 0;
+ }
+ pure_initcall(queued_enable_pv_ticketlock);
++#endif /* CONFIG_PARAVIRT */
+ 
+ #endif /* _GEN_PV_LOCK_SLOWPATH */
+
