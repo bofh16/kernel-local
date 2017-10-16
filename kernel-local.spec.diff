@@ -1,0 +1,158 @@
+--- /usr/src/rpmbuild/SPECS/kernel.spec	2017-09-12 15:47:02.000000000 +0200
++++ kernel-3.10.0-693.4.4.spec	2017-10-16 16:38:13.827438186 +0200
+@@ -3,7 +3,7 @@
+ 
+ Summary: The Linux kernel
+ 
+-# % define buildid .local
++%define buildid .local.96
+ 
+ # For a kernel released for public testing, released_kernel should be 1.
+ # For internal testing builds during development, it should be 0.
+@@ -31,40 +31,55 @@ Summary: The Linux kernel
+ # kernel
+ %define with_default   %{?_without_default:   0} %{?!_without_default:   1}
+ # kernel-debug
+-%define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
++#%define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
++
++%define with_debug			0
++%define with_debuginfo			0
++%define with_perf			0
++
++%define with_kernel_abi_whitelists	0
++%define with_kabichk			0
++
++%define with_baseonly			1
++%define with_dbgonly			0
++%define with_tools			0
++%define with_doc			0
++
+ # kernel-doc
+-%define with_doc       %{?_without_doc:       0} %{?!_without_doc:       1}
++#%define with_doc       %{?_without_doc:       0} %{?!_without_doc:       1}
+ # kernel-headers
+ %define with_headers   %{?_without_headers:   0} %{?!_without_headers:   1}
+ # perf
+-%define with_perf      %{?_without_perf:      0} %{?!_without_perf:      1}
++#%define with_perf      %{?_without_perf:      0} %{?!_without_perf:      1}
+ # tools
+-%define with_tools     %{?_without_tools:     0} %{?!_without_tools:     1}
++#%define with_tools     %{?_without_tools:     0} %{?!_without_tools:     1}
+ # kernel-debuginfo
+-%define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
++#%define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
+ # kernel-kdump (only for s390x)
++
+ %define with_kdump     %{?_without_kdump:     0} %{?!_without_kdump:     0}
+ # kernel-bootwrapper (for creating zImages from kernel + initrd)
+ %define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 0}
+ # kernel-abi-whitelists
+-%define with_kernel_abi_whitelists %{?_with_kernel_abi_whitelists: 0} %{?!_with_kernel_abi_whitelists: 1}
++#%define with_kernel_abi_whitelists %{?_with_kernel_abi_whitelists: 0} %{?!_with_kernel_abi_whitelists: 1}
+ 
+ # In RHEL, we always want the doc build failing to build to be a failure,
+ # which means settings this to false.
+-%define doc_build_fail false
++#%define doc_build_fail false
+ 
+ # Additional options for user-friendly one-off kernel building:
+ #
+ # Only build the base kernel (--with baseonly):
+-%define with_baseonly  %{?_with_baseonly:     1} %{?!_with_baseonly:     0}
++#%define with_baseonly  %{?_with_baseonly:     1} %{?!_with_baseonly:     0}
+ # Only build the debug kernel (--with dbgonly):
+-%define with_dbgonly   %{?_with_dbgonly:      1} %{?!_with_dbgonly:      0}
++#%define with_dbgonly   %{?_with_dbgonly:      1} %{?!_with_dbgonly:      0}
+ 
+ # Control whether we perform a compat. check against published ABI.
+-%define with_kabichk   %{?_without_kabichk:   0} %{?!_without_kabichk:   1}
++#%define with_kabichk   %{?_without_kabichk:   0} %{?!_without_kabichk:   1}
++%define with_kabichk	0
+ 
+ # Control whether we perform a compat. check against DUP ABI.
+-%define with_kabidupchk 1
++%define with_kabidupchk 0
+ 
+ # should we do C=1 builds with sparse
+ %define with_sparse    %{?_with_sparse:       1} %{?!_with_sparse:       0}
+@@ -356,19 +371,19 @@ Source1: Makefile.common
+ 
+ Source10: sign-modules
+ %define modsign_cmd %{SOURCE10}
+-Source11: x509.genkey
+-Source12: extra_certificates
++#Source11: x509.genkey
++#Source12: extra_certificates
+ %if %{?released_kernel}
+-Source13: centos.cer
+-Source14: secureboot.cer
++#Source13: centos.cer
++#Source14: secureboot.cer
+ %define pesign_name redhatsecureboot301
+ %else
+-Source13: centos.cer
+-Source14: secureboot.cer
++#Source13: centos.cer
++#Source14: secureboot.cer
+ %define pesign_name redhatsecureboot003
+ %endif
+-Source15: centos-ldup.x509
+-Source16: centos-kpatch.x509
++#Source15: centos-ldup.x509
++#Source16: centos-kpatch.x509
+ 
+ Source18: check-kabi
+ 
+@@ -717,9 +732,9 @@ cd linux-%{KVRA}
+ cp $RPM_SOURCE_DIR/kernel-%{version}-*.config .
+ 
+ ApplyOptionalPatch linux-kernel-test.patch
+-ApplyOptionalPatch debrand-single-cpu.patch
+-ApplyOptionalPatch debrand-rh_taint.patch
+-ApplyOptionalPatch debrand-rh-i686-cpu.patch
++#ApplyOptionalPatch debrand-single-cpu.patch
++#ApplyOptionalPatch debrand-rh_taint.patch
++#ApplyOptionalPatch debrand-rh-i686-cpu.patch
+ 
+ # Any further pre-build tree manipulations happen here.
+ 
+@@ -835,10 +850,10 @@ BuildKernel() {
+ 
+     make %{?cross_opts} -s mrproper
+ 
+-    cp %{SOURCE11} .	# x509.genkey
+-    cp %{SOURCE12} .	# extra_certificates
+-    cp %{SOURCE15} .	# rheldup3.x509
+-    cp %{SOURCE16} .	# rhelkpatch1.x509
++#    cp %{SOURCE11} .	# x509.genkey
++#    cp %{SOURCE12} .	# extra_certificates
++#    cp %{SOURCE15} .	# rheldup3.x509
++#    cp %{SOURCE16} .	# rhelkpatch1.x509
+ 
+     cp configs/$Config .config
+ 
+@@ -1058,8 +1073,8 @@ BuildKernel() {
+     # Also save the signing keys so we actually sign the modules with the
+     # right key.
+     cp -r .tmp_versions .tmp_versions.sign${Flavour:+.${Flavour}}
+-    cp signing_key.priv signing_key.priv.sign${Flavour:+.${Flavour}}
+-    cp signing_key.x509 signing_key.x509.sign${Flavour:+.${Flavour}}
++#    cp signing_key.priv signing_key.priv.sign${Flavour:+.${Flavour}}
++#    cp signing_key.x509 signing_key.x509.sign${Flavour:+.${Flavour}}
+ 
+     # remove files that will be auto generated by depmod at rpm -i time
+     for i in alias alias.bin builtin.bin ccwmap dep dep.bin ieee1394map inputmap isapnpmap ofmap pcimap seriomap symbols symbols.bin usbmap softdep devname
+@@ -1168,9 +1183,9 @@ find Documentation -type d | xargs chmod
+     Arch=`head -1 configs/kernel-%{version}-%{_target_cpu}.config | cut -b 3-` \
+     rm -rf .tmp_versions \
+     mv .tmp_versions.sign .tmp_versions \
+-    mv signing_key.priv.sign signing_key.priv \
+-    mv signing_key.x509.sign signing_key.x509 \
+-    %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVRA} || exit 1 \
++#    mv signing_key.priv.sign signing_key.priv \
++#    mv signing_key.x509.sign signing_key.x509 \
++#    %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVRA} || exit 1 \
+   fi \
+   if [ "%{zipmodules}" -eq "1" ]; then \
+     find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs xz; \
