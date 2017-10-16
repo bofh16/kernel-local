@@ -1,0 +1,3 @@
+# !/bin/bash
+
+time rpmbuild -bb --with baseonly --without fips --without up --without modules --without debug --without doc --without perf --without tools --without debuginfo --without kdump --without bootwrapper kernel-3.10.0-693.4.4.spec
