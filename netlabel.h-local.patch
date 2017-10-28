@@ -1,17 +1,18 @@
-diff -up linux-3.10.0-693.2.2.el7-org/include/net/netlabel.h linux-3.10.0-693.2.2.el7/include/net/netlabel.h 
---- linux-3.10.0-693.2.2.el7-org/include/net/netlabel.h 2017-09-27 15:08:04.855055715 +0200
-+++ linux-3.10.0-693.2.2.el7/include/net/netlabel.h 2017-09-29 08:42:14.542064497 +0200
-@@ -525,13 +525,6 @@ static inline int netlbl_catmap_setrng(s
+--- linux-3.10.0-693.5.2.el7-org/include/net/netlabel.h	2017-10-27 17:07:45.822536160 +0200
++++ linux-3.10.0-693.5.2.el7/include/net/netlabel.h	2017-10-28 09:34:21.058748725 +0200
+@@ -525,6 +525,7 @@ static inline int netlbl_catmap_setrng(s
  {
-        return 0;
+ 	return 0;
  }
--static int netlbl_catmap_setlong(struct netlbl_lsm_catmap **catmap,
--                                u32 offset,
--                                unsigned long bitmap,
--                                gfp_t flags)
--{
--       return 0;
--}
++#ifdef CONFIG_SECURITY
+ static int netlbl_catmap_setlong(struct netlbl_lsm_catmap **catmap,
+ 				 u32 offset,
+ 				 unsigned long bitmap,
+@@ -532,6 +533,7 @@ static int netlbl_catmap_setlong(struct
+ {
+ 	return 0;
+ }
++#endif /* CONFIG_SECURITY */
  static inline int netlbl_enabled(void)
  {
-        return 0;
+ 	return 0;

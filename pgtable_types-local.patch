@@ -1,0 +1,16 @@
+--- linux-3.10.0-693.5.2.el7-org/arch/x86/include/asm/pgtable_types.h   2017-10-27 17:07:38.521423489 +0200
++++ linux-3.10.0-693.5.2.el7/arch/x86/include/asm/pgtable_types.h       2017-10-28 06:44:56.608782332 +0200
+@@ -109,9 +109,13 @@
+  * Do compile-time checks for all the bits that may be set on
+  * non-present PTEs
+  */
++
++#ifdef CONFIG_MEM_SOFT_DIRTY
+ #if _PAGE_BIT_FILE == _PAGE_BIT_SWP_SOFT_DIRTY
+ #error conflicting _PAGE_BIT_FILE
+ #endif
++#endif /* CONFIG_MEM_SOFT_DIRTY */
++
+ #if _PAGE_BIT_FILE == _PAGE_BIT_PROTNONE
+ #error conflicting _PAGE_BIT_FILE
+ #endif

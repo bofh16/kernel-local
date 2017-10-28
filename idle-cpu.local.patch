@@ -1,0 +1,11 @@
+--- linux-3.10.0-693.5.2.el7-org/kernel/sched/sched.h	2017-10-27 17:07:46.062539864 +0200
++++ linux-3.10.0-693.5.2.el7/kernel/sched/sched.h	2017-10-28 07:56:20.243873135 +0200
+@@ -669,7 +669,7 @@ struct rq {
+ #ifndef __GENKSYMS__
+ 	/* CONFIG_SCHEDSTATS */
+ 	/* latency stats */
+-	struct sched_info rq_sched_info;
++	struct sched_info *rq_sched_info;
+ 	unsigned long long rq_cpu_time;
+ 	/* could above be rq->cfs_rq.exec_clock + rq->rt_rq.rt_runtime ? */
+ 

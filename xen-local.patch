@@ -1,19 +1,36 @@
-bofh@runner2:~/rpmbuild/SOURCES$ diff -up linux-3.10.0-693.2.2.el7-org/arch/x86/kernel/smpboot.c linux-3.10.0-693.2.2.el7/arch/x86/kernel/smpboot.c
---- linux-3.10.0-693.2.2.el7-org/arch/x86/kernel/smpboot.c      2017-10-03 10:44:19.978064057 +0200
-+++ linux-3.10.0-693.2.2.el7/arch/x86/kernel/smpboot.c  2017-10-03 11:02:38.182306317 +0200
+--- linux-3.10.0-693.2.2.el7-org/arch/x86/kernel/apic/io_apic.c	2017-09-09 09:06:42.000000000 +0200
++++ linux-3.10.0-693.2.2.el7/arch/x86/kernel/apic/io_apic.c	2017-10-05 11:01:55.239346126 +0200
+@@ -2620,6 +2620,7 @@ static void ack_apic_level(struct irq_da
+ 		eoi_ioapic_irq(irq, cfg);
+ 	}
+ 
++	#ifdef CONFIG_HYPERVISOR_GUEST
+ 	/*
+ 	 * RHEL-only: clear IRR bit in IO_APIC manually for Hyper-V Gen1 on irq
+ 	 * migration.
+@@ -2631,6 +2632,7 @@ static void ack_apic_level(struct irq_da
+ 		io_apic_modify_irq(cfg, ~IO_APIC_REDIR_REMOTE_IRR, 0, &io_apic_sync);
+ 		raw_spin_unlock_irqrestore(&ioapic_lock, flags);
+ 	}
++	#endif /* CONFIG_HYPERVISOR_GUEST */
+ 
+ 	ioapic_irqd_unmask(data, cfg, masked);
+ }
+--- linux-3.10.0-693.5.2.el7-org/arch/x86/kernel/smpboot.c	2017-10-27 17:07:38.586424492 +0200
++++ linux-3.10.0-693.5.2.el7/arch/x86/kernel/smpboot.c	2017-10-28 08:46:22.966703210 +0200
 @@ -338,6 +338,7 @@ static void __init smp_init_package_map(
-         */
-        max_physical_pkg_id = DIV_ROUND_UP(MAX_LOCAL_APIC, ncpus);
+ 	 */
+ 	max_physical_pkg_id = DIV_ROUND_UP(MAX_LOCAL_APIC, ncpus);
  
-+    #ifdef CONFIG_XEN
-     if (x86_hyper == &x86_hyper_xen_hvm) {
-         /*
-         * RHEL-only. Each logical package has not more than
++	#ifdef CONFIG_XEN
+ 	if (x86_hyper == &x86_hyper_xen_hvm) {
+ 		/*
+ 		 * RHEL-only. Each logical package has not more than
 @@ -348,6 +349,7 @@ static void __init smp_init_package_map(
-         */
-         __max_logical_packages = min(max_physical_pkg_id, total_cpus);
-     }
-+    #endif /* CONFIG_XEN */
+ 		 */
+ 		__max_logical_packages = min(max_physical_pkg_id, total_cpus);
+ 	}
++	#endif /* CONFIG_XEN */
  
-        size = max_physical_pkg_id * sizeof(unsigned int);
-        physical_to_logical_pkg = kmalloc(size, GFP_KERNEL);
+ 	size = max_physical_pkg_id * sizeof(unsigned int);
+ 	physical_to_logical_pkg = kmalloc(size, GFP_KERNEL);
